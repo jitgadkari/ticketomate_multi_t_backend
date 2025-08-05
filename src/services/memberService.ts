@@ -10,9 +10,12 @@ export interface CreateMemberInput {
   role?: Role;
   tenantId: string;
 }
+interface CreateMemberResponse extends Omit<User, 'passwordHash'> {
+    tempPassword: string;
+}
 
 export class MemberService {
-  async createMember(input: CreateMemberInput): Promise<Omit<User, 'passwordHash'>> {
+  async createMember(input: CreateMemberInput): Promise<CreateMemberResponse> {
     const existingUser = await prisma.user.findUnique({
       where: { email: input.email }
     });
