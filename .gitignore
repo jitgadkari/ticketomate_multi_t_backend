@@ -1,0 +1,8 @@
+.env
+.env.*
+node_modules
+build
+prisma
+yarn.lock
+package-lock.json
+yarn-error.log
