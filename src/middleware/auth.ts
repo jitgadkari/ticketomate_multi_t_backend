@@ -30,9 +30,10 @@ export const authMiddleware = async (
   next: NextFunction
 ) => {
   try {
-    console.log("Headers", req.headers);
-    const token = req.headers.authorization?.split(' ')[1];
-    console.log("Token", token);
+    console.log("Cookies", req.cookies);
+    const token = req.cookies.token;
+    console.log("Token from cookie", token);
+    
     if (!token) {
       throw new AppError(401, 'No token provided');
     }

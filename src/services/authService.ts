@@ -3,6 +3,7 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { prisma } from '../lib/prisma';
 import { AppError } from '../middleware/errorHandler';
+import { Tenant, User } from '@prisma/client';
 
 export interface SignupInput {
   tenantName: string;
@@ -135,4 +136,36 @@ export class AuthService {
       }
     };
   }
+
+  async getCurrentUser(userId: string): Promise<AuthResponse> {
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      include: { tenant: true }
+    });
+
+    if (!user) {
+      throw new AppError(404, 'User not found');
+    }
+
+    return {
+      token: this.generateToken(user.id, user.tenantId),
+      user: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        tenantId: user.tenantId
+      },
+      tenant: {
+        id: user.tenant.id,
+        name: user.tenant.name,
+        slug: user.tenant.slug
+      }
+    };
+  }
+}
+
+export interface CurrentUserResponse {
+  user: User;
+  tenant: Tenant;
 }
