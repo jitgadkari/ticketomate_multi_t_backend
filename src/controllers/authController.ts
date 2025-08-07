@@ -35,13 +35,19 @@ export class AuthController {
 
       const result = await this.authService.login(input);
       
-      res.cookie('token', result.token, {
+      const cookieOptions: any = {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
-        sameSite: 'lax',
+        sameSite: 'None',
         path: '/'
-      });
-
+      };
+  
+      // Only set domain for production
+      if (process.env.NODE_ENV === 'production') {
+        cookieOptions.domain = '.yourdomain.com';
+      }
+      
+      res.cookie('token', result.token, cookieOptions);
       res.json(result);
     } catch (error) {
       next(error);
